@@ -16,11 +16,12 @@ const io = new Server(server, {
     }
 });
 
-app.use(express.static(join(__dirname, '.')));
+// Serve static files from the 'src' directory
+app.use(express.static(join(__dirname, 'src')));
 app.use(awsServerlessExpressMiddleware.eventContext());
 
 app.get('/', (req, res) => {
-  res.sendFile(join(__dirname, 'Home.html'));
+  res.sendFile(join(__dirname, 'src', 'index.html'));
 });
 
 let taskCompletion = false;
@@ -55,6 +56,7 @@ io.on('connection', (socket) => {
         console.log('Right door light disabled');
         io.emit('rightDoorLightStatus', rightDoorLight);
     });
+
 
     socket.on('sendFunction', (functionString) => {
         let receivedFunction = new Function('return ' + functionString)();
