@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Let's Party!!!</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script> const socket = io.connect('https://k466zwf9ia.execute-api.us-east-1.amazonaws.com');</script>
+</head>
+<body>
+    <button id="startButton" style="position: fixed; bottom: 10px; left: 10px;">.</button>
+
+<script>
+document.getElementById('startButton').addEventListener('click', function() {
+    // Create or resume the AudioContext when the button is clicked
+    if (audioContext.state === 'suspended') {
+        audioContext.resume();
+    } else {
+        audioContext = new AudioContext();
+        // Rest of your AudioContext setup code...
+    }
+
+    // Hide the button
+    this.style.display = 'none';
+});
+</script>
+    
+    <audio id="sound1" src="thunderstorm.mp3"></audio>
+    <audio id="sound2" src="fnaf1amb.mp3"></audio>
+    <style>
+        
+    @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
+
+    body {
+        font-family: 'Pixelify Sans', sans-serif;
+        background-color: black;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .content {
+        text-align: center;
+    }
+
+    button {
+        font-family: 'Pixelify Sans', 'Courier New', Courier, monospace;
+        font-size: 20px;
+        background-color: transparent;
+        color: white;
+        border: 2px solid white;
+        padding: 5px 10px;
+        margin: 10px;
+    }
+    button:disabled {
+    color: rgb(48, 48, 48);
+    border-color: rgb(47, 47, 47);
+    }
+    button:active {
+        box-shadow: 0 0 10px #ffffff; /* Adjust as needed */
+    }
+</style>
+
+    <div class="content">
+        <button id="readyButton" onclick="playVideoAndRedirect()">Are you ready?</button>
+    </div>
+    <script>
+        function playVideoAndRedirect() {
+            // Remove the button
+            let button = document.getElementById('readyButton');
+            button.parentNode.removeChild(button);
+    
+            // Create a new video element and set the source
+            let video = document.createElement('video');
+            video.src = 'Preshow.mp4'; // replace with your video file
+            video.preload = 'auto';
+            video.style.position = 'fixed';
+            video.style.width = '100%';
+            video.style.height = '100%';
+            video.style.zIndex = '9999';
+    
+            // Append the video to the body
+            document.body.appendChild(video);
+    
+            // Play the video
+            video.play();
+    
+            // When the video ends, redirect to Guard.html
+            video.onended = function() {
+                window.location.href = 'Guard.html';
+            };
+        }
+
+        window.onload = function() {
+    let sound1 = document.getElementById('sound1');
+    let sound2 = document.getElementById('sound2');
+
+    // Set volume to 50%
+    sound1.volume = 0.5;
+    sound2.volume = 0.05;
+};
+
+    const audioContext = new AudioContext();
+        const analyser = audioContext.createAnalyser();
+        const gainNode = audioContext.createGain();
+        const audioElement = document.getElementById('sound1');
+        const audioSource = audioContext.createMediaElementSource(audioElement);
+
+        audioSource.connect(analyser);
+        analyser.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+        let midiAccess = null;
+
+        navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
+
+        function onMIDISuccess(midi) {
+            midiAccess = midi;
+        }
+
+        function onMIDIFailure() {
+            console.log('Could not access your MIDI devices.');
+        }
+
+        function sendMIDINote() {
+            const output = midiAccess.outputs.values().next().value;
+            output.send([0x90, 59, 0x7f]); // MIDI note on, middle C, full velocity
+            output.send([0x80, 59, 0x7f], window.performance.now() + 10); // MIDI note off, delay of 1 second
+        }
+
+        function checkVolume() {
+            analyser.getByteFrequencyData(dataArray);
+            const volume = Math.max(...dataArray);
+
+            if (volume > 235) { // Replace 128 with the volume threshold you want
+                console.log('Volume threshold exceeded');
+                sendMIDINote();
+            }
+
+            requestAnimationFrame(checkVolume);
+        }
+
+        socket.on('playSound', function(soundName) {
+    console.log('Received playSound event with soundName:', soundName);
+    var soundElement = document.getElementById(soundName);
+    console.log('Sound element:', soundElement);
+    if (soundElement) {
+        soundElement.play();
+        if (soundName === 'sound1') {
+            checkVolume();
+        }
+    }
+});
+
+        const sound1 = document.getElementById('sound1');
+         const sound2 = document.getElementById('sound2');
+
+    socket.on('stopAllSounds', function() {
+        // Stop all sounds
+        if (sound1) sound1.pause();
+        if (sound2) sound2.pause();
+    });
+    </script>
+</body>
+</html>

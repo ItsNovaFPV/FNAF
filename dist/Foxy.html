@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foxy</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <audio id="rsound1" src="1.mp3"></audio>
+    <audio id="rsound2" src="2.mp3"></audio>
+    <audio id="rsound3" src="3.mp3"></audio>
+    <audio id="rsound4" src="4.mp3"></audio>
+    <audio id="rsound5" src="5.mp3"></audio>
+    <audio id="rsound6" src="6.mp3"></audio>
+
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
+
+    body {
+        font-family: 'Pixelify Sans', sans-serif;
+        background-color: black;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .content {
+        text-align: center;
+    }
+
+    button {
+        font-family: 'Pixelify Sans', 'Courier New', Courier, monospace;
+        font-size: 20px;
+        background-color: transparent;
+        color: white;
+        border: 2px solid white;
+        padding: 5px 10px;
+        margin: 10px;
+    }
+    button:disabled {
+    color: rgb(48, 48, 48);
+    border-color: rgb(47, 47, 47);
+    }
+    button:active {
+        box-shadow: 0 0 10px #ffffff; /* Adjust as needed */
+    }
+
+    .coolButton {
+    background-size: cover;
+    border: 2px solid white;
+    color: white;
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.coolButton:disabled {
+    color: rgb(48, 48, 48);
+    border-color: rgb(47, 47, 47);
+    cursor: not-allowed;
+}
+
+    </style>
+    <div class="content">
+        <button onclick="window.location.href='Animatronic.html';" style="position: fixed; top: 10px; left: 10px; z-index: 1;">Back to Animatronic</button>
+        <h1 id="position">Position: A2</h1>
+        <button id="startButton">Ready</button>
+        <button id="jumpscareButton" disabled>Jumpscare</button>
+        <!--<button id="hallucinationButton" class="coolButton" disabled>Send Hallucination</button> -->
+        <button id="playRandomAudio" class="coolButton">Play SFX for Guard</button>
+        <p id="countdown"></p>
+        <h1 id="time">
+    </div>
+</body>
+</html>
+
+    <script>
+    const socket = io.connect('https://main.d3e7zzrv994hmv.amplifyapp.com');
+    let animatronic = {
+        position: 'A2' // Initial position
+    };
+    let positions = ['A2', 'B2', 'C2', 'D2']; // Possible positions
+    let jumpscareTimeout;
+    socket.on('connect', function() {
+    console.log('Connected to the server');
+});
+
+document.getElementById('jumpscareButton').addEventListener('click', function() {
+    console.log('Jumpscare button clicked');
+   
+    setTimeout(function() {
+        socket.emit('playAudio');
+    }, 3000); // 3 seconds
+});
+let currentHour = 0;
+
+// Update the current hour when the 'timeUpdate' event is received
+socket.on('timeUpdate', function(hour) {
+    currentHour = hour;
+
+    // Convert the hour to a string
+    let hourString = hour === 0 ? '12 AM' : hour + ' AM';
+
+    // Update the displayed time
+    document.getElementById('time').innerText = hourString;
+});
+
+
+        let leftDoorLight = false;
+
+        socket.on('leftDoorLightStatus', function(status) {
+            leftDoorLight = status;
+
+            // If the right door light is on and the animatronic is at position D1, move to position C1
+            if (leftDoorLight && animatronic.position === 'D2') {
+                animatronic.position = 'C2';
+                document.getElementById('position').innerText = 'Position: ' + animatronic.position;
+
+                // Clear the jumpscare timeout and disable the jumpscare button
+                clearTimeout(jumpscareTimeout);
+                document.getElementById('jumpscareButton').disabled = true;
+
+                // Clear the countdown interval and reset the countdown text
+                clearInterval(countdownInterval);
+                document.getElementById('countdown').innerText = '';
+            }
+        });
+
+        document.getElementById('startButton').addEventListener('click', function() {
+        // Notify the server that the game is ready
+        socket.emit('ready');
+        // Make the button disappear
+        this.style.display = 'none';
+
+            let beepSound = new Audio('beep.wav');
+
+        // Start the interval to change the animatronic's position every 10 seconds
+        setInterval(function() {
+            // If the animatronic is at position D1, don't change its position
+            if (animatronic.position === 'D2') {
+                return;
+            }
+
+            // If the right door light is on and the animatronic is at position D1, move to position C1
+            if (leftDoorLight && animatronic.position === 'D2') {
+                animatronic.position = 'C2';
+            } else {
+                // Randomly change the animatronic's position
+                let newPositionIndex;
+                if (currentHour >= 4) { // If it's past 4AM
+                    // Only choose between C1 and D1
+                    newPositionIndex = Math.random() < 0.5 ? positions.indexOf('C2') : positions.indexOf('D2');
+                } else {
+                    // Choose between all positions
+                    newPositionIndex = Math.floor(Math.random() * positions.length);
+                }
+                animatronic.position = positions[newPositionIndex];
+            }
+            beepSound.play();
+            document.getElementById('position').innerText = 'Position: ' + animatronic.position;
+
+            // If the new position is D1, start a timeout to enable the "Jumpscare" button after 5 seconds
+            if (animatronic.position === 'D2') {
+                jumpscareTimeout = setTimeout(function() {
+                    document.getElementById('jumpscareButton').disabled = false;
+                }, 5000); // 5 seconds
+            } else {
+                // If the new position is not D1, clear the timeout and disable the "Jumpscare" button
+                clearTimeout(jumpscareTimeout);
+                document.getElementById('jumpscareButton').disabled = true;
+            }
+        }, 10000); // 10 seconds
+
+    document.getElementById('jumpscareButton').addEventListener('click', function() {
+        console.log('Jumpscare button clicked');
+
+        let countdown = 3;
+        document.getElementById('countdown').innerText = 'Jumpscare in ' + countdown + ' seconds...';
+
+        let countdownInterval = setInterval(function() {
+            countdown--;
+
+            if (countdown > 0) {
+                document.getElementById('countdown').innerText = 'Jumpscare in ' + countdown + ' seconds...';
+            } else {
+                document.getElementById('countdown').innerText = '';
+                clearInterval(countdownInterval);
+
+                // Call the gameOver function in sockets when the countdown reaches 0
+                socket.emit('gameOver');
+            }
+        }, 1000); // 1 second
+    });
+
+    socket.on('guardWin', function() {
+            guardWin(); // Call the guardWin function when the 'guardWin' event is received
+        });
+    
+    function guardWin() {
+        console.log('Security Guard wins');
+
+// Remove all existing elements from the body
+document.body.innerHTML = '';
+
+// Create a new video element for the .webm file
+    let video = document.createElement('video');
+video.src = '6am.webm';
+video.style.width = '100%';
+video.style.height = '100%';
+video.autoplay = true;
+video.loop = true;
+
+// Append the video to the body
+document.body.appendChild(video);
+
+// Create a new audio element and play the audio file
+let audio = new Audio('6am.mp3');
+audio.play();
+
+// Reload the page after a delay
+setTimeout(function() {
+    location.reload();
+}, 10000); // 10 seconds
+}
+
+socket.on('gameOver', function() {
+             animatronicWin();
+        });
+
+        function animatronicWin() {
+            console.log('Game over, Animatronic Win');
+          // Remove all existing elements from the body
+        document.body.innerHTML = '';
+
+        // Create a new video element for the .webm file
+            let video = document.createElement('video');
+        video.src = 'animatronicWin.webm';
+        video.style.width = '100%';
+        video.style.height = '100%';
+        video.autoplay = true;
+        video.loop = true;
+
+        // Append the video to the body
+        document.body.appendChild(video);
+
+         // Create a new audio element and play the audio file after a delay
+    setTimeout(function() {
+        let audio = new Audio('animatronicWin.mp3');
+        audio.play();
+    }, 3000); // 3 seconds delay
+
+             // Redirect to animatronic.html after a delay
+        setTimeout(function() {
+            location.href = 'animatronic.html';
+        }, 7000); // 7 seconds
+
+        }
+    });
+    socket.on('fired', function() {
+    console.log('The guard has been fired!');
+    // Remove all existing elements from the body
+document.body.innerHTML = '';
+
+// Create a new div element
+let div = document.createElement('div');
+div.style.position = 'fixed';
+div.style.top = '50%';
+div.style.left = '50%';
+div.style.transform = 'translate(-50%, -50%)';
+div.style.textAlign = 'center';
+div.style.fontSize = '2em'; // Adjust as needed
+div.textContent = 'The Security Guard has been Fired...';
+
+// Append the div to the body
+document.body.appendChild(div);
+
+    // Create a new audio element and play the audio file
+    let audiofired = new Audio('fired.mp3');
+    audiofired.play();
+
+    // Reload the page after a delay
+    setTimeout(function() {
+        location.reload();
+    }, 10000); // 10 seconds
+});
+    </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', (event) => {
+                const hallucinationButton = document.getElementById('hallucinationButton');
+                const playRandomAudio = document.getElementById('playRandomAudio');
+                let countdownInterval; // Declare countdownInterval globally
+
+                // Enable hallucinationButton after 360 seconds
+                setTimeout(() => {
+                    hallucinationButton.disabled = false;
+                }, 360000); // 360 seconds
+
+                function enableButtonAfterCooldown(button, cooldown) {
+                    button.disabled = true;
+                    let countdown = cooldown;
+                    button.innerText = `Cooldown: ${countdown} seconds`;
+
+                    countdownInterval = setInterval(() => { // Use the global countdownInterval
+                        countdown--;
+                        if (countdown > 0) {
+                            button.innerText = `Cooldown: ${countdown} seconds`;
+                        } else {
+                            clearInterval(countdownInterval);
+                            button.disabled = false;
+                            button.innerText = 'Play SFX for Guard';
+                        }
+                    }, 1000);
+                }
+
+                hallucinationButton.addEventListener('click', function() {
+                    socket.emit('sendHallucination');
+                    this.disabled = true; // Permanently disable the button after it's clicked
+                });
+
+                playRandomAudio.addEventListener('click', function() {
+                    socket.emit('playRandomAudio');
+                    enableButtonAfterCooldown(this, 90); // 30 seconds cooldown
+                });
+            });
+        </script>
+</body>
+</html>

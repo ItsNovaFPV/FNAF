@@ -1,0 +1,1 @@
+export let freddyMoveChance = 0.99;

@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Guard</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io.connect('https://main.d3e7zzrv994hmv.amplifyapp.com');
+        socket.on('playAudio', function() {
+        document.getElementById('jumpscareAudio').play();
+        console.log('Audio has been played');
+        });
+    </script>
+</head>
+<body>
+    <audio id="sound1" src="thunderstorm.mp3"></audio>
+    <audio id="sound2" src="fnaf1amb.mp3"></audio>
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
+        body{
+            font-family: 'Pixelify Sans', 'Courier New', Courier, monospace;
+            background-color: black;
+            margin-top: 0;
+        }
+    </style>
+    <img id="map" src="fnafmap.png" alt="Map">
+    <div id="overlay"></div>
+    <div id="line"></div>
+    <h1 id="time"></h1>
+    <div id="loadingBarContainer" style="width: 100%; height: 20px; background-color: grey; display: none; z-index: 9999999; position: relative;">
+        <div id="loadingBar" style="height: 100%; width: 0; background-color: white;"></div>
+    </div>
+    <div id="fadeOverlay"></div>
+    <audio id="jumpscareAudio" src="jumpscare.mp3"></audio>
+
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Choose a door:</p>
+            <button id="leftDoor">Left Door</button>
+            <button id="rightDoor">Right Door</button>
+        </div>
+    </div>
+    
+
+
+<!-- Button Modal -->
+<button id="openModalButton" 
+style="position: fixed; bottom: 270px; left: 40px; z-index: 1; height:80px; width: 500px; font-family: 'Pixelify Sans', Courier; font-size: 50px; background-color: transparent; color: white; border: 2px solid white;" 
+onclick="openModal()">Lights</button>
+
+<!-- Button Modal2 -->
+<button id="openModalButton2" 
+style="position: fixed; bottom: 175px; left: 40px; z-index: 1; height:80px; width: 500px; font-family: 'Pixelify Sans', Courier; font-size: 50px; background-color: transparent; color: white; border: 2px solid white;" 
+onclick="openModal2()">Maintenence</button>
+
+<!-- The Modal2 -->
+<div id="modal2" class="modal2">
+
+    <!-- Modal content -->
+    <div class="modal2-content">
+      <span class="close2">&times;</span>
+      <button id="button1">Camera System</button>
+      <button id="button2">Power Generator</button>
+      <button id="button3">Office Ventilation</button>
+    </div>
+  
+  </div>
+
+  <!-- Button Modal3 -->
+<button id="openModalButton3" 
+style="position: fixed; bottom: 80px; left: 40px; z-index: 1; height:80px; width: 500px; font-family: 'Pixelify Sans', Courier; font-size: 50px; background-color: transparent; color: white; border: 2px solid white;" 
+onclick="openModal3()">Tasks</button>
+
+<!-- The Modal3 -->
+<div id="modal3" class="modal3">
+
+    <!-- Modal3 content -->
+    <div class="modal3-content">
+        <div class="header">
+            <p id="taskPrompt">Select a Task:</p>
+            <span class="close3">&times;</span>
+        </div>
+        <div class="grid-container">
+            <button id="button13">Print Posters</button>
+            <button id="button23">Print Menus</button>
+            <button id="button33">Order Napkins</button>
+            <button id="button43">Order Plates</button>
+            <button id="button53">Repair Lighting</button>
+            <button id="button63">Repair Ventilation Panel</button>
+            <button id="button73">Check EMail</button>
+            <button id="button83">Inventory Equipment</button>
+            <button id="button93">Inventory Supplies</button>
+            <button id="button103">Inventory Signs</button>
+        </div>
+    </div>
+  
+  </div>
+
+  <audio id="rsound1" src="1.mp3"></audio>
+  <audio id="rsound2" src="2.mp3"></audio>
+  <audio id="rsound3" src="3.mp3"></audio>
+  <audio id="rsound4" src="4.mp3"></audio>
+  <audio id="rsound5" src="5.mp3"></audio>
+  <audio id="rsound6" src="6.mp3"></audio>
+
+<!-- Back to Home -->
+<button onclick="window.location.href='index.html';" style="position: fixed; top: 10px; left: 10px; z-index: 1; border: white; background-color: black; color:white; font-family: 'Pixelify Sans', Courier; ;">Home</button>
+    <script>
+// set the initial time to 12 AM
+document.getElementById('time').innerText = '12 AM';
+         // Socket connection to function to update in game time 
+    socket.on('timeUpdate', function(hour) {
+        // Convert the hour to a string
+        let hourString;
+        if (hour === 0) {
+            hourString = '12 AM';
+        } else if (hour === 12) {
+            hourString = '12 PM';
+        } else if (hour > 12) {
+            hourString = (hour - 12) + ' PM';
+        } else {
+            hourString = hour + ' AM';
+        }
+
+        // Update the displayed time
+        document.getElementById('time').innerText = hourString;
+        
+        socket.on('guardWin', function() {
+            guardWin(); // Call the guardWin function when the 'guardWin' event is received
+        });
+    });
+    function guardWin() {
+        console.log('Security Guard wins');
+
+// Remove all existing elements from the body
+document.body.innerHTML = '';
+
+// Create a new video element for the .webm file
+    let video = document.createElement('video');
+video.src = '6am.webm';
+video.style.width = '100%';
+video.style.height = '100%';
+video.autoplay = true;
+video.loop = true;
+video.zIndex = 1000000000;
+
+// Append the video to the body
+document.body.appendChild(video);
+
+// Create a new audio element and play the audio file
+let audio = new Audio('6am.mp3');
+audio.play();
+
+// Reload the page after a delay
+setTimeout(function() {
+    location.reload();
+}, 10000); // 10 seconds
+}
+
+socket.on('gameOver', function() {
+    setTimeout(animatronicWin, 1500); // Delay of 3 seconds
+        });
+
+        function animatronicWin() {
+            console.log('Game over, Animatronic Win');
+          // Remove all existing elements from the body
+        document.body.innerHTML = '';
+
+        // Create a new video element for the .webm file
+            let video = document.createElement('video');
+        video.src = 'animatronicWin.webm';
+        video.style.width = '100%';
+        video.style.height = '100%';
+        video.autoplay = true;
+        video.loop = true;
+        video.zIndex = 1000000000;
+
+        // Append the video to the body
+        document.body.appendChild(video);
+
+         // Create a new audio element and play the audio file after a delay
+    setTimeout(function() {
+        let audio1 = new Audio('animatronicWin.mp3');
+        audio1.play();
+    }, 3000); // 3 seconds delay
+
+            // Reload the page after a delay
+            setTimeout(function() {
+                location.reload();
+            }, 7000); // 7 seconds
+
+        }
+// Flag to indicate whether the modal can be opened
+var canOpenModal = true;
+
+// Function to open the modal
+window.openModal = function() {
+    if (canOpenModal) {
+        var modal = document.getElementById("myModal");
+        if (modal.style.display === "none" || modal.style.display === "") {
+            modal.style.display = "block";
+        } else {
+            modal.style.display = "none";
+        }
+    } else {
+        console.log("Modal cannot be opened due to power generator failure.");
+    }
+}
+
+</script>
+
+
+
+    <style>
+        #time {
+            font-size: 75px;
+            font-family: 'Pixelify Sans', 'Courier New', Courier, monospace;
+            color: white;
+            position: fixed;
+            top: 0px;
+            left: 375px;
+            z-index: 999;
+        }
+    /* The Modal (background) */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        z-index: 4;
+    }
+
+    /* Modal Content/Box */
+    .modal-content {
+        font-size: 50px;
+        font-family: 'Pixelify Sans', 'Courier New', Courier, monospace;
+        color:white;
+        background-color: #000000;
+        margin: 10% auto; /* 15% from the top and centered */
+        padding: 10px;
+        border: 10px solid #ffffff;
+        width: 50%; /* Could be more or less, depending on screen size */
+        height: 50%;
+        z-index: 4;
+    }
+
+    #leftDoor {
+        font-family: 'Pixelify Sans', 'Courier New', Courier, monospace;
+        font-size: 50px;
+        background-image: url('light.png');
+        background-position: center; /* Center the image */
+        background-repeat: no-repeat; /* Prevent the image from repeating */
+        background-size: contain; /* Scale the image down to fit within the button */
+        background-color: transparent;
+        color: gray;
+        height: 320px;
+        width: 320px;
+        border: 2px solid white;
+        padding: 10px 20px;
+        position:absolute;
+        right: 1025px;
+        top: 340px;
+        margin: 10px;
+        }
+    #rightDoor {
+        font-family: 'Pixelify Sans', 'Courier New', Courier, monospace;
+        font-size: 50px;
+        background-image: url('light.png');
+        background-position: center; /* Center the image */
+        background-repeat: no-repeat; /* Prevent the image from repeating */
+        background-size: contain; /* Scale the image down to fit within the button */
+        background-color: transparent;
+        color: gray;
+        height: 320px;
+        width: 320px;
+        border: 2px solid white;
+        padding: 10px 10px;
+        position: absolute;
+        right: 575px;
+        top: 340px;
+        margin: 10px;
+    }
+
+    /* The Close Button */
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    /* The Modal2 (background) */
+.modal2 {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        z-index: 4;
+}
+
+/* Modal Content */
+.modal2-content {
+    font-size: 50px;
+        font-family: 'Pixelify Sans', 'Courier New', Courier, monospace;
+        color:white;
+        background-color: #000000;
+        margin: 10% auto; /* 15% from the top and centered */
+        padding: 10px;
+        border: 10px solid #ffffff;
+        width: 50%; /* Could be more or less, depending on screen size */
+        height: 50%;
+        z-index: 4;
+}
+
+    #button1 {
+        font-family: 'Pixelify Sans', 'Courier New', Courier, monospace;
+        font-size: 50px;
+        background-color: transparent;
+        color: white;
+        border: 2px solid white;
+        padding: 10px 20px;
+        position:absolute;
+        right: 750px;
+        top: 290px;
+        margin: 10px;
+        }
+        #button2 {
+        font-family: 'Pixelify Sans', 'Courier New', Courier, monospace;
+        font-size: 50px;
+        background-color: transparent;
+        color: white;
+        border: 2px solid white;
+        padding: 10px 20px;
+        position:absolute;
+        right: 750px;
+        top: 425px;
+        margin: 10px;
+        }
+        #button3 {
+        font-family: 'Pixelify Sans', 'Courier New', Courier, monospace;
+        font-size: 50px;
+        background-color: transparent;
+        color: white;
+        border: 2px solid white;
+        padding: 10px 20px;
+        position:absolute;
+        right: 750px;
+        top: 560px;
+        margin: 10px;
+        }
+
+/* The Close Button */
+.close2 {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close2:hover,
+.close2:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+ /*modal 3*/
+ .modal3 {
+     display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        z-index: 4;
+}
+.header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 10px;
+    align-items: start;
+    /* Your existing styles here */
+}
+    .modal3-content {
+        display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+        font-size: 50px;
+        font-family: 'Pixelify Sans', 'Courier New', Courier, monospace;
+        color:white;
+        background-color: #000000;
+        margin: 10% auto; /* 15% from the top and centered */
+        padding: 10px;
+        border: 10px solid #ffffff;
+        width: 50%; /* Could be more or less, depending on screen size */
+        height: 50%;
+        z-index: 4;
+    }
+
+    #button13 {
+        font-family: 'Pixelify Sans', 'Courier New', Courier, monospace;
+        font-size: 20px;
+        background-color: transparent;
+        color: white;
+        border: 2px solid white;
+        padding: 5px 10px;
+        margin: 10px;
+        }
+        #button23 {
+        font-family: 'Pixelify Sans', 'Courier New', Courier, monospace;
+        font-size: 20px;
+        background-color: transparent;
+        color: white;
+        border: 2px solid white;
+        padding: 5px 10px;
+        margin: 10px;
+        }
+        #button33 {
+        font-family: 'Pixelify Sans', 'Courier New', Courier, monospace;
+        font-size: 20px;
+        background-color: transparent;
+        color: white;
+        border: 2px solid white;
+        padding: 5px 10px;
+        margin: 10px;
+        }
+        #button43 {
+        font-family: 'Pixelify Sans', 'Courier New', Courier, monospace;
+        font-size: 20px;
+        background-color: transparent;
+        color: white;
+        border: 2px solid white;
+        padding: 5px 10px;
+        margin: 10px;
+        }
+        #button53 {
+        font-family: 'Pixelify Sans', 'Courier New', Courier, monospace;
+        font-size: 20px;
+        background-color: transparent;
+        color: white;
+        border: 2px solid white;
+        padding: 5px 10px;
+        margin: 10px;
+        }
+        #button63 {
+        font-family: 'Pixelify Sans', 'Courier New', Courier, monospace;
+        font-size: 20px;
+        background-color: transparent;
+        color: white;
+        border: 2px solid white;
+        padding: 5px 10px;
+        margin: 10px;
+        }
+        #button73 {
+        font-family: 'Pixelify Sans', 'Courier New', Courier, monospace;
+        font-size: 20px;
+        background-color: transparent;
+        color: white;
+        border: 2px solid white;
+        padding: 5px 10px;
+        margin: 10px;
+        }
+        #button83 {
+        font-family: 'Pixelify Sans', 'Courier New', Courier, monospace;
+        font-size: 20px;
+        background-color: transparent;
+        color: white;
+        border: 2px solid white;
+        padding: 5px 10px;
+        margin: 10px;
+        }
+        #button93 {
+        font-family: 'Pixelify Sans', 'Courier New', Courier, monospace;
+        font-size: 20px;
+        background-color: transparent;
+        color: white;
+        border: 2px solid white;
+        padding: 5px 10px;
+        margin: 10px;
+        }
+        #button103 {
+        font-family: 'Pixelify Sans', 'Courier New', Courier, monospace;
+        font-size: 20px;
+        background-color: transparent;
+        color: white;
+        border: 2px solid white;
+        padding: 5px 10px;
+        margin: 10px;
+        }
+        #taskPrompt {
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 40px;
+        color: white;
+}
+
+
+/* The Close Button */
+.close3 {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close3:hover,
+.close3:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+    </style>
+     <div id="video-container">
+    <video id="webcam" autoplay style="position: fixed; width: 100%; height: 100%; bottom:0px; left:300px;"></video>
+    </div>
+    <style>
+    #overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 25%;
+        left: 590px;
+        background: url('tv-static.gif') repeat;
+        pointer-events: none;
+        z-index: 2;
+    }
+    #line {
+        border-left: 14px solid white;
+        height: 100%; /* Adjust this value as needed */
+        position: absolute;
+        left: 585px; /* Adjust this value to move the line horizontally */
+        z-index: 2;
+        bottom: 0px;
+    }
+    #map {
+    position: fixed;
+    left: 44px;
+    top: 115px;
+    width: 500px; /* Adjust this value as needed */
+    height: auto;
+    z-index: 1; /* Adjust this value as needed */
+}
+    </style>
+    <div id="button-container">
+        <button id="btn0" onclick="switchCamera(0)" disabled>Camera 1</button>
+        <button id="btn1" onclick="switchCamera(1)" disabled>Camera 2</button>
+        <button id="btn2" onclick="switchCamera(2)" disabled>Camera 3</button>
+        <button id="btn3" onclick="switchCamera(3)" disabled>Camera 4</button>
+        <button id="btn4" onclick="switchCamera(4)" disabled>Camera 5</button>
+        <button id="btn5" onclick="switchCamera(5)" disabled>Camera 6</button>
+    </div>
+    <style>
+    #btn0 {
+        position: absolute;
+        top: 258px; /* Adjust as needed */
+        left: 300px; /* Adjust as needed */
+        width: 94px;
+        height: 60px;
+        z-index: 1;
+        background-color: transparent;
+        border: none;
+        color: rgba(0, 0, 0, 0);
+    }
+    
+    #btn1 {
+        position: absolute;
+        top: 290px; /* Adjust as needed */
+        left: 49px; /* Adjust as needed */
+        width: 94px;
+        height: 60px;
+        z-index: 1;
+        background-color: transparent;
+        border: none;
+        color: rgba(0, 0, 0, 0);
+    }
+    button:active {
+    box-shadow: 0 0 10px #ffffff; /* Adjust as needed */
+}
+    #btn2 {
+        position: absolute;
+        top: 370px; /* Adjust as needed */
+        left: 121px; /* Adjust as needed */
+        width: 94px;
+        height: 60px;
+        z-index: 1;
+        background-color: transparent;
+        border: none;
+        color: rgba(0, 0, 0, 0);
+    }
+    #btn3 {
+        position: absolute;
+        top: 527px; /* Adjust as needed */
+        left:115px; /* Adjust as needed */
+        width: 94px;
+        height: 60px;
+        z-index: 1;
+        background-color: transparent;
+        border: none;
+        color: rgba(0, 0, 0, 0);
+    }
+    #btn4 {
+        position: absolute;
+        top: 527px; /* Adjust as needed */
+        left:261px; /* Adjust as needed */
+        width: 94px;
+        height: 60px;
+        z-index: 1;
+        background-color: transparent;
+        border: none;
+        color: rgba(0, 0, 0, 0);
+    }
+    #btn5 {
+        position: absolute;
+        top: 505px; /* Adjust as needed */
+        left: 371px; /* Adjust as needed */
+        width: 94px;
+        height: 60px;
+        z-index: 1;
+        background-color: transparent;
+        border: none;
+        color: rgba(0, 0, 0, 0);
+    }
+</style>
+    <script>
+        let cameraIds = [];
+
+        navigator.mediaDevices.enumerateDevices()
+            .then(function(devices) {
+                devices.forEach(function(device) {
+                    if (device.kind === 'videoinput') {
+                        cameraIds.push(device.deviceId);
+                    }
+                });
+                for (let i = 0; i < 6; i++) {
+                    document.getElementById('btn' + i).disabled = false;
+                }
+            })
+            .catch(function(err) {
+                console.log('An error occurred: ' + err);
+            });
+
+        let currentStream;
+
+        function stopMediaTracks(stream) {
+            stream.getTracks().forEach(track => {
+                track.stop();
+            });
+        }
+
+        function switchCamera(cameraIndex) {
+            if (typeof currentStream !== 'undefined') {
+                stopMediaTracks(currentStream);
+            }
+
+            navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: cameraIds[cameraIndex] } } })
+                .then(function(stream) {
+                    currentStream = stream;
+                    var video = document.getElementById('webcam');
+                    video.srcObject = stream;
+                })
+                .catch(function(err) {
+                    console.log('An error occurred: ' + err);
+                });
+        }
+
+        // Request MIDI access
+        navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
+
+        function onMIDISuccess(midiAccess) {
+            // Get the first output port
+            const output = Array.from(midiAccess.outputs.values())[0];
+
+            document.getElementById('leftDoor').addEventListener('mousedown', function() {
+                console.log('Left Door button pressed');
+                socket.emit('leftDoorButtonPress');
+
+                // Send a MIDI message
+                // The array represents a MIDI message to turn on middle C on channel 1 at maximum velocity.
+                output.send([144, 60, 127]);
+            });
+
+            document.getElementById('leftDoor').addEventListener('mouseup', function() {
+                console.log('Left Door button released');
+                socket.emit('leftDoorButtonRelease');
+
+                // Send a MIDI message
+                // The array represents a MIDI message to turn off middle C on channel 1.
+                output.send([128, 60, 0]);
+            });
+
+            document.getElementById('rightDoor').addEventListener('mousedown', function() {
+                console.log('Right Door button pressed');
+                socket.emit('rightDoorButtonPress');
+
+                // Send a MIDI message
+                // The array represents a MIDI message to turn on D on channel 1 at maximum velocity.
+                output.send([144, 62, 127]);
+            });
+
+            document.getElementById('rightDoor').addEventListener('mouseup', function() {
+                console.log('Right Door button released');
+                socket.emit('rightDoorButtonRelease');
+
+                // Send a MIDI message
+                // The array represents a MIDI message to turn off D on channel 1.
+                output.send([128, 62, 0]);
+            });
+        }
+
+        function onMIDIFailure() {
+            console.error('Could not access your MIDI devices.');
+        }
+
+{
+        // Get the modal
+        var modal = document.getElementById("myModal");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+
+        // make it so the modal isn't open upon website entry 
+        modal.style.display = "none";
+    }
+
+        // Get the modal
+        var modal2 = document.getElementById("modal2");
+
+        // Get the button that opens the modal
+        var btnm2 = document.getElementById("openModalButton2");
+
+        // Get the <span> element that closes the modal
+        var span2 = document.getElementsByClassName("close2")[0];
+
+        var isResetting = false;
+
+        // When the user clicks the button, open the modal 
+        btnm2.onclick = function() {
+            modal2.style.display = "block";
+        }
+
+        span.onclick = function() {
+    if (!isResetting) {
+        modal.style.display = "none";
+    }
+}
+span2.onclick = function() {
+    if (!isResetting) {
+        modal2.style.display = "none";
+    }
+    if (!isResetting) {
+        modal3.style.display = "none";
+    }
+}
+
+// Modify the onclick handler for the window
+window.onclick = function(event) {
+    if (!isResetting) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+        if (event.target == modal2) {
+            modal2.style.display = "none";
+        }
+        if (event.target == modal3) {
+            modal3.style.display = "none";
+        }
+    }
+}
+        // Get the modal 3
+        var modal3 = document.getElementById("modal3");
+
+        // Get the button that opens the modal
+        var btnm3 = document.getElementById("openModalButton3");
+
+        // Get the <span> element that closes the modal
+        var span3 = document.getElementsByClassName("close3")[0];
+
+        var isResetting = false;
+
+        // When the user clicks the button, open the modal 
+        btnm3.onclick = function() {
+            modal3.style.display = "block";
+        }
+
+    // MAINTENENCE PANEL AND BUTTON LOGIC AND FUNCTIONALITY
+    var alarm;
+    // Failure functions for each system
+    function cameraSystemFailure() {
+        console.log("Camera System Failure");
+        maintButtonFlash();
+          // Get the overlay element
+        var overlay = document.getElementById("overlay");
+
+        // Set the opacity to 100%
+        overlay.style.opacity = "1";
+    }
+
+    function powerGeneratorFailure() {
+        console.log("Power Generator Failure");
+        maintButtonFlash();
+        // Disable the modal from being opened
+        canOpenModal = false;
+    }
+
+    function officeVentilationFailure() {
+    console.log("Office Ventilation Failure");
+    maintButtonFlash();
+    
+    document.getElementById("fadeOverlay").classList.add("fade");
+
+    // If an alarm is already playing, stop it
+    if (alarm) {
+        alarm.pause();
+        alarm.currentTime = 0;
+        alarm = null;
+    }
+
+    // Start playing the alarm sound
+    alarm = new Audio('alarm.mp3');
+    alarm.loop = true;
+    alarm.play();
+}
+
+    // Function to simulate loading bar
+    function simulateLoadingBar() {
+        // Get the loading bar and its container
+        var loadingBar = document.getElementById("loadingBar");
+        var loadingBarContainer = document.getElementById("loadingBarContainer");
+
+        // Show the loading bar container
+        loadingBarContainer.style.display = "block";
+
+        // Reset the width of the loading bar
+        loadingBar.style.width = "0";
+
+        // Start playing the beep sound every second
+        var beep = new Audio('beep.wav');
+        var beepIntervalId = setInterval(function() {
+            beep.play();
+        }, 1000);
+
+        // Increase the width of the loading bar every second
+        var width = 0;
+        var loadingIntervalId = setInterval(function() {
+            if (width >= 100) {
+                // Stop the beep sound and the loading bar when the width reaches 100%
+                clearInterval(beepIntervalId);
+                clearInterval(loadingIntervalId);
+                loadingBarContainer.style.display = "none";
+            } else {
+                width += 35;  // Increase the width by 100% each second
+                loadingBar.style.width = width + "%"; 
+            }
+        }, 1000);
+    }
+
+    // Array of system failure functions
+    var systemFailures = [cameraSystemFailure, powerGeneratorFailure, officeVentilationFailure];
+
+    // Function to randomly determine if a system fails
+    // Function to randomly determine if a system fails
+    function randomFailure() {
+        // Get the current in-game time
+        var timeText = document.getElementById('time').innerText;
+        var hour = parseInt(timeText);
+        var isPM = timeText.includes('PM');
+
+        // Convert the time to 24-hour format
+        if (hour === 12) {
+            hour = isPM ? 12 : 0;
+        } else if (isPM) {
+            hour += 12;
+        }
+
+        // Only allow a failure to occur after 1 AM
+        if (hour >= 1) {
+            var randomIndex = Math.floor(Math.random() * systemFailures.length);
+            var randomChance = Math.random();
+
+            // 30% chance of failure
+            if (randomChance < 0.3) {
+                // Stop the interval
+                clearInterval(intervalId);
+
+                // Trigger the failure function
+                systemFailures[randomIndex]();
+
+                // Simulate loading bar when the button in the Maintenance modal is clicked
+                document.getElementById("button1").onclick = function() {
+                    isResetting = true;
+                    simulateLoadingBar();
+                    setTimeout(cameraSystemReset, 3000);
+                };
+                document.getElementById("button2").onclick = function() {
+                    isResetting = true;
+                    simulateLoadingBar();
+                    setTimeout(powerGeneratorReset, 3000);
+                };
+                document.getElementById("button3").onclick = function() {
+                    isResetting = true;
+                    simulateLoadingBar();
+                    setTimeout(officeVentilationReset, 3000);
+                };
+            }
+        }
+
+        // Restart the interval whether a failure has occurred or not
+        intervalId = setInterval(randomFailure, 90000);
+    }
+
+    socket.on('startFailureSimulation', function() {
+        randomFailure();
+    });
+
+         // RESET FUNCTIONS
+    function cameraSystemReset() {
+        console.log("Camera System Reset");
+        isResetting = false;
+        stopMaintButtonFlash();
+        // Get the overlay element
+        var overlay = document.getElementById("overlay");
+
+        // Set the opacity to 0%
+        overlay.style.opacity = "0.25";
+    }
+
+    function powerGeneratorReset() {
+        isResetting = false;
+        console.log("Power Generator Reset");
+        stopMaintButtonFlash();
+        // Enable the modal to be opened
+        canOpenModal = true;
+    }
+
+    function officeVentilationReset() {
+    isResetting = false;
+    console.log("Office Ventilation Reset");
+    stopMaintButtonFlash();
+    // Stop the screen fading effect
+    document.getElementById("fadeOverlay").classList.remove("fade");
+    // Stop playing the alarm sound
+    if (alarm) {
+        alarm.pause();
+        alarm.currentTime = 0;
+    }
+}
+// Define the flickerAudio in the global scope
+var flickerAudio = new Audio('flicker.mp3');
+
+// Define the intervalId in the global scope
+var intervalId;
+
+// Function to start the button flicker and play the flickerAudio every second
+function maintButtonFlash() {
+    // Get the button
+    var button = document.getElementById("openModalButton2");
+
+    // Add the flicker class to the button
+    button.classList.add("flicker");
+
+    // Start playing the flickerAudio 
+    flickerAudio.play();
+}
+
+// Function to stop the button flicker and stop the flickerAudio
+function stopMaintButtonFlash() {
+    // Get the button
+    var button = document.getElementById("openModalButton2");
+
+    // Remove the flicker class from the button
+    button.classList.remove("flicker");
+
+    // Clear the interval
+    if (intervalId) {
+        clearInterval(intervalId);
+    }
+
+    // Stop the flickerAudio if it's playing
+    if (!flickerAudio.paused) {
+        flickerAudio.pause();
+        flickerAudio.currentTime = 0;
+    }
+}
+
+
+    // Start the interval
+    var intervalId = setInterval(randomFailure, 30000);
+
+</script>
+<style>
+    #fadeOverlay {
+    position: fixed;  /* Position it at a fixed place in the viewport */
+    top: 0;  /* Position it at the top of the viewport */
+    left: 0;  /* Position it at the left of the viewport */
+    width: 100vw;  /* Make it cover the entire width of the viewport */
+    height: 100vh;  /* Make it cover the entire height of the viewport */
+    pointer-events: none;
+}
+
+@keyframes fade {
+    0% {background-color: transparent;}
+    50% {background-color: red;}
+    100% {background-color: transparent;}
+}
+
+.fade {
+    animation: fade 2s infinite;
+    z-index: 999999;  
+}
+
+@keyframes flicker {
+    0% {background-color: transparent;}
+    50% {background-color: red;}
+    100% {background-color: transparent;}
+}
+
+.flicker {
+    animation: flicker 1s infinite;
+}
+</style>
+<script>
+            var buttons = ["button13", "button23", "button33", "button43", "button53", "button63", "button73", "button83", "button93", "button103"];
+
+         function disableAllButtons() {
+                buttons.forEach(function(buttonId) {
+                    var button = document.getElementById(buttonId);
+                    button.disabled = true;
+                });
+            }
+
+            function enableAllButtons() {
+                buttons.forEach(function(buttonId) {
+                    var button = document.getElementById(buttonId);
+                    if (!button.classList.contains('completed')) {
+                        button.disabled = false;
+                    }
+                });
+            }
+
+            var allCompleted = false;
+
+            function startTask(buttonId, taskDuration) {
+                // Disable all buttons when a task starts
+                disableAllButtons();
+
+                isResetting = true;
+
+                // Get the button and the loading bar
+                var button = document.getElementById(buttonId);
+                var loadingBar = document.getElementById("loadingBar");
+                var loadingBarContainer = document.getElementById("loadingBarContainer");
+
+                // Show the loading bar container
+                loadingBarContainer.style.display = "block";
+
+                // Reset the width of the loading bar
+                loadingBar.style.width = "0";
+
+                // Start playing the beep sound every second
+                var beep = new Audio('beep.wav');
+                var beepIntervalId = setInterval(function() {
+                    beep.play();
+                }, 1000);
+
+                // Increase the width of the loading bar every second
+                var width = 0;
+                var loadingIntervalId = setInterval(function() {
+                    if (width >= 100) {
+                        // Enable all buttons when the task finishes
+                        enableAllButtons();
+
+                        // Stop the beep sound and the loading bar when the width reaches 100%
+                        clearInterval(beepIntervalId);
+                        clearInterval(loadingIntervalId);
+                        loadingBarContainer.style.display = "none";
+                        button.classList.add('completed');
+                        checkAllTasksCompleted();
+                        // Hide the button when the task is complete
+                        button.style.display = "none";
+
+                        // Set isResetting to false when the task is done
+                        isResetting = false;
+                    } else {
+                        width += 100 / taskDuration;  // Increase the width based on the task duration
+                        loadingBar.style.width = width + "%"; 
+                    }
+                }, 1000);
+            }
+
+            // Attach the startTask function to each button
+            buttons.forEach(function(buttonId) {
+                document.getElementById(buttonId).onclick = function() { startTask(buttonId, 6); }
+            });
+
+            function checkAllTasksCompleted() {
+                // Get all buttons
+                var buttons = document.querySelectorAll('.modal3-content button');
+
+                // Check if all buttons have the 'completed' class
+                var allCompleted = Array.from(buttons).every(function(button) {
+                    return button.classList.contains('completed');
+                });
+            }
+
+    var taskCompletion = false;
+
+    if (allCompleted) {
+        taskCompletion = true;
+        console.log('All tasks have been completed!');
+     // Send taskCompletion to the server
+    socket.emit('task completion', taskCompletion);
+        // You can add more code here to do something when all tasks are completed
+    }
+
+var closeButton = document.querySelector('.close3');
+var width = 0;
+closeButton.style.pointerEvents = 'none';
+if (width >= 100) {
+    // Stop the beep sound and the loading bar when the width reaches 100%
+    clearInterval(beepIntervalId);
+    clearInterval(loadingIntervalId);
+    loadingBarContainer.style.display = "none";
+    button.classList.add('completed');
+    checkAllTasksCompleted();
+    // Hide the button when the task is complete
+    button.style.display = "none";
+    closeButton.style.pointerEvents = 'auto';  // Re-enable the close button
+}
+
+socket.on('fired', function() {
+    console.log('The guard has been fired!');
+    // Remove all existing elements from the body
+document.body.innerHTML = '';
+
+    // Create a new video element for the .webm file
+        let video = document.createElement('video');
+    video.src = 'fired.webm';
+    video.style.width = '100%';
+    video.style.height = '100%';
+    video.autoplay = true;
+    video.loop = true;
+    video.zIndex = 10000000000000000;
+
+    // Append the video to the body
+    document.body.appendChild(video);
+
+    // Create a new audio element and play the audio file
+    let audiofired = new Audio('fired.mp3');
+    audiofired.play();
+
+    // Reload the page after a delay
+    setTimeout(function() {
+        location.reload();
+    }, 10000); // 10 seconds
+});
+
+//Fun Buttons for Hallucination and Strobe Lights
+socket.on('guardHallucination', () => {
+    console.log('Received hallucination event');
+    triggerHallucination(); // Call the function that handles the hallucination
+});
+
+socket.on('playrSound', () => {
+    console.log('Received sound event');
+    triggerSound(); // Call the function that handles the strobe lights
+});
+
+function triggerHallucination() {
+    console.log('Triggering hallucination');
+    // Create a new video element
+    const video = document.createElement('video');
+
+    // Set the source of the video
+    video.src = 'hallucination.mp4';
+
+    // Set the video to preload
+    video.preload = 'auto';
+
+    // Set the video to autoplay
+    video.autoplay = true;
+
+    // Set the video to cover the entire screen
+    video.style.position = 'fixed';
+    video.style.left = '0';
+    video.style.top = '0';
+    video.style.width = '100%';
+    video.style.height = '100%';
+    video.style.zIndex = '99999999999999999999999999999';
+
+    // Add the video to the body of the document
+    document.body.appendChild(video);
+
+    // Remove the video when it ends
+    video.onended = function() {
+        document.body.removeChild(video);
+    };
+}
+
+
+let randomSound; // Define randomSound outside of any function
+
+    function triggerSound() {
+        const soundNumber = Math.floor(Math.random() * 6) + 1; // Random number between 1 and 6
+    const soundElement = document.getElementById(`rsound${soundNumber}`);
+    if (soundElement) {
+        soundElement.play();
+    } else {
+        console.error(`No audio element with id sound${soundNumber} found`);
+    }
+}
+
+// MIDI AND OFFICE NOISE
+
+window.onload = function() {
+    let sound1 = document.getElementById('sound1');
+    let sound2 = document.getElementById('sound2');
+
+    // Set volume to 50%
+    sound1.volume = 0.5;
+    sound2.volume = 0.05;
+};
+
+const audioContext = new AudioContext();
+        const analyser = audioContext.createAnalyser();
+        const gainNode = audioContext.createGain();
+        const audioElement = document.getElementById('sound1');
+        const audioSource = audioContext.createMediaElementSource(audioElement);
+
+        audioSource.connect(analyser);
+        analyser.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+        let midiAccess = null;
+
+        navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
+
+        function onMIDISuccess(midi) {
+            midiAccess = midi;
+        }
+
+        function onMIDIFailure() {
+            console.log('Could not access your MIDI devices.');
+        }
+
+        function sendMIDINote() {
+            const output = midiAccess.outputs.values().next().value;
+            output.send([0x90, 59, 0x7f]); // MIDI note on, middle C, full velocity
+            output.send([0x80, 59, 0x7f], window.performance.now() + 10); // MIDI note off, delay of 1 second
+        }
+
+        function checkVolume() {
+            analyser.getByteFrequencyData(dataArray);
+            const volume = Math.max(...dataArray);
+
+            if (volume > 235) { // Replace 128 with the volume threshold you want
+                console.log('Volume threshold exceeded');
+                sendMIDINote();
+            }
+
+            requestAnimationFrame(checkVolume);
+        }
+
+        socket.on('playSound', function(soundName) {
+            document.getElementById(soundName).play();
+            if (soundName === 'sound1') {
+                checkVolume();
+            }
+        });
+
+        const sound1 = document.getElementById('sound1');
+    const sound2 = document.getElementById('sound2');
+
+    socket.on('stopAllSounds', function() {
+        // Stop all sounds
+        if (sound1) sound1.pause();
+        if (sound2) sound2.pause();
+    });
+
+</script>
+</body>
+</html>
+
