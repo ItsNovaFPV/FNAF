@@ -1,20 +1,13 @@
 {
   "name": "fnaf",
   "version": "1.0.0",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "mkdir -p dist && cp -r * dist",
     "start": "node index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "aws-serverless-express": "^3.4.0",
-    "dmx": "^0.2.5",
-    "express": "^4.21.0",
-    "midi": "^2.0.0",
-    "socket.io": "^4.8.0"
+    "express": "^4.17.1",
+    "socket.io": "^4.0.0",
+    "aws-serverless-express": "^3.4.0"
   }
 }
