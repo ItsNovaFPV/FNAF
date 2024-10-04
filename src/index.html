@@ -19,17 +19,15 @@
     <title>Five Nights at Bob Helmer's</title>
 </head>
 <body>
-    <a href="Guard.html">
-    <button class="button">Security Guard</button>
-    </a>
-    <a href="Animatronic.html">
-        <button class="button">Animatronic</button>
-    </a>
-    <a href="Admin.html">
-        <button class="button">Admin</button>
-    </a>
-    <a href="preshow.html"> <!-- Ensure this matches the actual file name -->
-        <button class="button">Preshow</button>
-    </a>
+    <div class="button" onclick="navigateTo('Guard.html')">Security Guard</div>
+    <div class="button" onclick="navigateTo('Animatronic.html')">Animatronic</div>
+    <div class="button" onclick="navigateTo('Admin.html')">Admin</div>
+    <div class="button" onclick="navigateTo('preshow.html')">Preshow</div>
+
+    <script>
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+    </script>
 </body>
 </html>
