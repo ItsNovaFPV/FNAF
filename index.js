@@ -24,10 +24,6 @@ app.get('/', (req, res) => {
   res.sendFile(join(__dirname, 'dist', 'index.html'));
 });
 
-app.get('/preshow', (req, res) => {
-  res.sendFile(join(__dirname, 'dist', 'preshow.html'));
-});
-
 let taskCompletion = false;
 let gameInterval;
 
