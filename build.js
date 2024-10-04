@@ -4,19 +4,25 @@ const path = require('path');
 // Define the dist directory
 const distDir = path.join(__dirname, 'dist');
 
+// Log the current working directory
+console.log('Current working directory:', __dirname);
+
 // Remove the dist directory if it exists
 if (fs.existsSync(distDir)) {
   console.log('Removing existing dist directory...');
   fs.rmSync(distDir, { recursive: true, force: true });
+  console.log('Removed existing dist directory.');
 }
 
 // Create the dist directory
 console.log('Creating dist directory...');
 fs.mkdirSync(distDir);
+console.log('Created dist directory.');
 
 // Copy index.js to the dist directory
 console.log('Copying index.js to dist directory...');
 fs.copyFileSync(path.join(__dirname, 'index.js'), path.join(distDir, 'index.js'));
+console.log('Copied index.js to dist directory.');
 
 // Create package.json in the dist directory
 console.log('Creating package.json in dist directory...');
@@ -35,5 +41,9 @@ const packageJson = {
 };
 
 fs.writeFileSync(path.join(distDir, 'package.json'), JSON.stringify(packageJson, null, 2));
+console.log('Created package.json in dist directory.');
+
+// Log the contents of the dist directory
+console.log('Contents of dist directory:', fs.readdirSync(distDir));
 
 console.log('Build completed.');
