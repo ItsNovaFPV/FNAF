@@ -2,7 +2,7 @@
   "name": "fnaf",
   "version": "1.0.0",
   "scripts": {
-    "build": "rmdir /s /q dist 2>nul & mkdir dist & copy index.js dist & echo {\"name\":\"fnaf\",\"version\":\"1.0.0\",\"main\":\"index.js\",\"scripts\":{\"start\":\"node index.js\"},\"dependencies\":{\"express\":\"^4.17.1\",\"socket.io\":\"^4.0.0\",\"aws-serverless-express\":\"^3.4.0\"}} > dist/package.json & echo Build completed.",
+    "build": "node build.js",
     "start": "node index.js"
   },
   "dependencies": {
