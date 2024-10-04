@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Your Animatronic</title>
+    <style>
+
+        @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
+
+        body {
+            font-family: 'Pixelify Sans', sans-serif;
+            background-color: black;
+            background-image: url('partyroom.png');
+            background-size: cover;;
+
+            color: white;
+        }
+        h1 {
+            font-size: 150px;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .animatronic-button {
+            width: 500px;
+            height: 500px;
+            background-size: cover;
+            margin: 50px;
+            
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50vh; /* This makes the container take up the full height of the viewport */
+            flex-wrap: wrap; /* This allows the buttons to wrap to a new line if there isn't enough space */
+        
+        }
+        #animatronic1 {
+            background-image: url('Freddypfp.png');
+            border: 5px solid white;
+}
+
+        #animatronic2 {
+            background-image: url('Chicapfp.png');
+            border: 5px solid white;
+        }
+        #animatronic3 {
+            background-image: url('Bonniepfp.png');
+            border: 5px solid white;
+        }
+        #animatronic4 {
+            background-image: url('Foxypfp.png');
+            border: 5px solid white;
+        }
+       
+        #home-button {
+            font-family: 'Pixelify Sans', sans-serif;
+            font-size: 50px;
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #f8f9fa;
+            color: white;
+            text-decoration: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: rgba(0, 0, 0, 0.5);
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            transition: background-color 0.3s ease;
+}
+
+#home-button:hover {
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+#home-button:active {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+        
+        @media (max-width: 600px) {
+            /* Adjust styles for mobile here */
+            #home-button {
+                font-size: 35px;
+                position: fixed;    
+                top: 2px;
+                left: 10px;
+            }
+            .animatronic-button {
+                width: 350px;
+                height: 350px;
+                margin: 20px;
+            }
+            .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 20vh; /* This makes the container take up the full height of the viewport */
+            flex-wrap: wrap; /* This allows the buttons to wrap to a new line if there isn't enough space */
+        }
+            h1 {
+                margin-top: 85px;
+                font-size: 65px;
+            }
+            #home-button {
+                top: 20px;
+                left: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Select Your Animatronic</h1>
+    <div class="button-container">
+    <button id="animatronic1" class="animatronic-button" onclick="window.location.href='Freddy.html';"></button>
+    <button id="animatronic2" class="animatronic-button" onclick="window.location.href='Chica.html';"></button>
+    <button id="animatronic3" class="animatronic-button" onclick="window.location.href='Bonnie.html';"></button>
+    <button id="animatronic4" class="animatronic-button" onclick="window.location.href='Foxy.html';"></button>
+    <!-- <button id="home-button" onclick="window.location.href='index.html';">Go Home</button> -->
+    </div>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-fnaf-dev-0ec3e-authRole",
+      "UnauthRoleArn": "arn:aws:iam::762233753291:role/amplify-fnaf-dev-0ec3e-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::762233753291:role/amplify-fnaf-dev-0ec3e-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-fnaf-dev-0ec3e-deployment",
+      "UnauthRoleName": "amplify-fnaf-dev-0ec3e-unauthRole",
+      "StackName": "amplify-fnaf-dev-0ec3e",
+      "StackId": "arn:aws:cloudformation:us-east-1:762233753291:stack/amplify-fnaf-dev-0ec3e/628c5050-81f8-11ef-980f-0e2cf6963599",
+      "AmplifyAppId": "d4ttha64ublto"
+    }
+  }
+}
