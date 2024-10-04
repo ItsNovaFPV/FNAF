@@ -2,7 +2,7 @@
   "name": "fnaf",
   "version": "1.0.0",
   "scripts": {
-    "build": "mkdir -p dist && cp -r * dist",
+    "build": "mkdir dist && xcopy * dist /E /I /Y",
     "start": "node index.js"
   },
   "dependencies": {
